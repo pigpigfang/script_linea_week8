@@ -27,27 +27,58 @@ import * as compound from './tasks/compound';
 import * as zkusd from './tasks/zkusd';
 import * as gridex from './tasks/gridex';
 import { config } from './config';
-import { loop } from './utils/utils';
+import {getGasPrice, loop} from './utils/utils';
 
 const main = async (wallet: ethers.Wallet) => {
-  await pancake.run(wallet)
-  await compound.run(wallet);
-  await kyberswap.run(wallet)
-  await airswap.run(wallet)
-  await sushiswap.run(wallet)
-  await uniswap.run(wallet)
-  await cashmere.run(wallet)
-  await izumi.run(wallet)
-  await zkusd.run(wallet)
-  await squid.run(wallet)
-  await mendi.run(wallet)
-  await dforce.run(wallet)
-  await velocore.run(wallet)
-  await gridex.run(wallet)
-  // await zkex.run(wallet)
-  await symbiosis.run(wallet)
-  await openocean.run(wallet);
-  await noobysswap.run(wallet);
+  const tasks = [
+    () => pancake.run(wallet),
+    () => compound.run(wallet),
+    () => kyberswap.run(wallet),
+    () => airswap.run(wallet),
+    () => sushiswap.run(wallet),
+    () => uniswap.run(wallet),
+    // () => cashmere.run(wallet),
+    () => izumi.run(wallet),
+    () => zkusd.run(wallet),
+    () => squid.run(wallet),
+    () => mendi.run(wallet),
+    () => dforce.run(wallet),
+    () => velocore.run(wallet),
+    () => gridex.run(wallet),
+    // () => zkex.run(wallet),
+    () => symbiosis.run(wallet),
+    () => openocean.run(wallet),
+    () => noobysswap.run(wallet),
+  ];
+
+  // 乱序函数
+  function shuffle(array) {
+    var currentIndex = array.length, temporaryValue, randomIndex;
+
+    // 当仍然有元素未洗牌
+    while (0 !== currentIndex) {
+
+      // 选择剩下的元素
+      randomIndex = Math.floor(Math.random() * currentIndex);
+      currentIndex -= 1;
+
+      // 交换现在的元素和选择的元素
+      temporaryValue = array[currentIndex];
+      array[currentIndex] = array[randomIndex];
+      array[randomIndex] = temporaryValue;
+    }
+
+    return array;
+  }
+
+  // 打乱任务顺序
+  shuffle(tasks);
+
+  // 执行所有任务
+  for(let task of tasks) {
+    // 检查GAS价格
+    await task();
+  }
 }
 
 cli(async ({ action, pks, startIdx, endIdx }) => {

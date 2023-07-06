@@ -1,8 +1,11 @@
-import { config } from "@/config";
-import { readFileSync } from "fs";
+import {config} from "@/config";
+import {readFileSync} from "fs";
 import fse from 'fs-extra';
-export { setTimeout as sleep } from 'node:timers/promises';
 import path from "path";
+import {ethers} from 'ethers';
+import {lineaProvider} from "@/tasks/base";
+
+export { setTimeout as sleep } from 'node:timers/promises';
 
 /** 生成固定长度的字符串 */
 export const randomString = (len: number) => {
@@ -95,4 +98,10 @@ export async function task(cb, opts: {
   } catch (error) {
     console.log(`❌执行失败: ${error?.reason || error?.message}`)
   }
+}
+
+export const getGasPrice = async () => {
+  const gasPrice = await lineaProvider.getGasPrice();
+  // console.log(`⛽️当前气价: ${Math.ceil(+gasGwei)}Gwei`)
+  return ethers.utils.formatUnits(gasPrice, 'gwei');
 }

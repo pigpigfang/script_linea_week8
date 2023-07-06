@@ -1,5 +1,5 @@
 import { parseArgs } from "node:util";
-import { getTxtContent } from "./utils";
+import {getGasPrice, getTxtContent} from "./utils";
 import path from "node:path";
 
 type CallbackFn = (p: {
@@ -11,6 +11,15 @@ type CallbackFn = (p: {
 
 export const cli = async (cb: CallbackFn, run = true) => {
   if (!run) return;
+  let gasPrice = parseFloat(await getGasPrice());
+  // 获取当前时间
+  let currentDateTime = new Date();
+  while(gasPrice > 3000) {
+    console.log(`🤯🤯🤯At: \x1b[31m%s\x1b[0m Waiting for Gas to drop... Current gas price is \x1b[36m%s\x1b[0m`, currentDateTime.toLocaleString(), gasPrice);
+    await new Promise(resolve => setTimeout(resolve, 30000)); // wait for 10 seconds
+    gasPrice = parseFloat(await getGasPrice());
+    currentDateTime = await new Date();
+  }
   const {
     values: { action, batch },
   } = parseArgs({
